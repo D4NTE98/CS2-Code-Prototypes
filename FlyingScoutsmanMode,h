@@ -1,0 +1,34 @@
+#pragma once
+#include "cbase.h"
+#include "cs_player.h"
+#include "weapon_csbase.h"
+
+constexpr float FS_GRAVITY = 0.5f;
+constexpr float FS_MOVESPEED = 1.25f;
+constexpr int FS_RESPAWN_TIME = 3;
+
+class CFlyingScoutsmanMode : public CAutoGameSystemPerFrame {
+public:
+    CFlyingScoutsmanMode() : CAutoGameSystemPerFrame("FlyingScoutsmanMode") {}
+    
+    // Hooks systemowe
+    virtual void PostInit() override;
+    virtual void LevelInitPostEntity() override;
+    virtual void FrameUpdatePostEntityThink() override;
+
+private:
+    void ApplyGameRules();
+    void ModifyPlayerAttributes(CCSPlayer* player);
+    void ForceScoutLoadout(CCSPlayer* player);
+    void HandleRespawn(CCSPlayer* player);
+    
+    // Hooks zdarzeń
+    void __fastcall Hook_PlayerSpawn(void* thisptr, int edx);
+    void __fastcall Hook_PlayerDeath(void* thisptr, int edx, const CTakeDamageInfo& info);
+    
+    static bool __fastcall Hook_WeaponCanUse(void* thisptr, int edx, CBaseEntity* weapon);
+    
+    CBaseEntityHook m_hookPlayerSpawn;
+    CBaseEntityHook m_hookPlayerDeath;
+    CBaseEntityHook m_hookWeaponCanUse;
+};
